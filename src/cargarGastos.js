@@ -21,7 +21,7 @@ const gastoFilter = gastos.filter((gasto) =>{
             document.querySelector('#gastosE .gastos__mensaje').classList.remove('gastos__mensaje--active');
          //Para asegurarnos de que no haya gastos en el DOM
          contenedorGastos.innerHTML = '';
-
+         
               //Currency ; formato de moneda
          const formatoMoneda =new Intl.NumberFormat('es-AR', {style: 'currency', currency: 'ARS'});
 

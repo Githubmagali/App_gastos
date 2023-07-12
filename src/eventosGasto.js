@@ -51,7 +51,8 @@ if(gastosGuardados && gastosGuardados.length > 0){
   //para hacerle un atributo personalizado
   document.querySelector('#formulario-desc').dataset.id = id;
 
-  abrirFormularioGasto();
+  //Le pasamos el parametro que es una cadena de text 'editarGasto' que lo recibo de eventoBtnFormularioGasto.js en la funcion abrirFormularioGasto 
+  abrirFormularioGasto('editarGasto0');
 }
 }
 });

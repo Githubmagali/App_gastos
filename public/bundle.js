@@ -3,10 +3,15 @@
 const boton00 = document.getElementById('toggle-form-gasto'); //linea 115
 const formularioGasto = document.getElementById('formulario-gasto');
 
-
-const abrirFormularioGasto = () =>{
+//Le indico que quiero recibir el modo pero en caso de no recibir ningun parametro quierp que le pasen 'agregarGasto'
+const abrirFormularioGasto = (modo = 'agregarGasto') =>{
   boton00.classList.add('agregar-gasto__btn--active');
   formularioGasto.classList.add('formulario-gasto--active');
+
+  //comprobamos ese modo con un condicional y le cambio el texto
+  if(modo === 'editarGasto0'){
+    document.querySelector('.formulario-gasto__titulo').innerText = 'Editar gasto'; //accedo primero al id del formulario pero no es obligatorio
+  }
 };
 
 const cerrarFormularioGasto = () =>{
@@ -18,6 +23,7 @@ boton00.addEventListener('click', (e) =>{
     if([...formularioGasto.classList].includes('formulario-gasto--active')){ //Si ... el arreglo formularioGasto tiene activo(.includes) el id formulario-gasto--active
         cerrarFormularioGasto();
     }else {
+      //como no tiene ningun parametro va a establecer la variable modo y por defecto 'agregarGasto'
         abrirFormularioGasto();
     }
     });
@@ -2998,7 +3004,7 @@ const gastoFilter = gastos.filter((gasto) =>{
             document.querySelector('#gastosE .gastos__mensaje').classList.remove('gastos__mensaje--active');
          //Para asegurarnos de que no haya gastos en el DOM
          contenedorGastos$1.innerHTML = '';
-
+         
               //Currency ; formato de moneda
          const formatoMoneda =new Intl.NumberFormat('es-AR', {style: 'currency', currency: 'ARS'});
 
@@ -3238,7 +3244,8 @@ if(gastosGuardados && gastosGuardados.length > 0){
   //para hacerle un atributo personalizado
   document.querySelector('#formulario-desc').dataset.id = id;
 
-  abrirFormularioGasto();
+  //Le pasamos el parametro que es una cadena de text 'editarGasto' que lo recibo de eventoBtnFormularioGasto.js en la funcion abrirFormularioGasto 
+  abrirFormularioGasto('editarGasto0');
 }
 }
 });
