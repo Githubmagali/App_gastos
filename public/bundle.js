@@ -11,6 +11,16 @@ const abrirFormularioGasto = (modo = 'agregarGasto') =>{
   //comprobamos ese modo con un condicional y le cambio el texto
   if(modo === 'editarGasto0'){
     document.querySelector('.formulario-gasto__titulo').innerText = 'Editar gasto'; //accedo primero al id del formulario pero no es obligatorio
+    document.querySelector('.formulario-gasto__btn').innerText = 'Editar gasto';
+    document.getElementById('formulario-gasto').dataset.modo= 'editarGasto0'; //le agrega data-modo=''
+  }else {
+    document.getElementById('descripcionInput').value= ''; //limpia el codigo en caso de encontrarnos en el modo de agregar gasto
+    document.getElementById('precioInput').value= '';
+
+    document.querySelector('.formulario-gasto__titulo').innerText = 'Agregar gasto'; //accedo primero al id del formulario pero no es obligatorio
+    document.querySelector('.formulario-gasto__btn').innerText = 'Agregar gasto';
+    document.getElementById('formulario-gasto').dataset.modo= 'agregarGasto'; //le agrega data-modo=''
+
   }
 };
 
@@ -3159,6 +3169,13 @@ precio00.addEventListener('keyup', (e)=>{
 
 formulario00.addEventListener('submit', (e)=>{
   e.preventDefault();
+  //con closest le indicamos que busque desde el formulario hacia arriba el elemento que tenga el id formulario-gasto
+  //comprobamos que tenga un dataset con ? y encaso de que tenga; ? accedemos a .modo 
+  const modo = formulario00.closest('#formulario-gasto')?.dataset?.modo;
+  //console.log(modo);
+  //return; cortamos el codigo que esta debajo
+
+  //comprobamos que la descripcion y el precio son correctos
   if(comprobarDescripcion() && comprobarPrecio()){
     const nuevoGasto ={
       id: v4(),
@@ -3169,6 +3186,10 @@ formulario00.addEventListener('submit', (e)=>{
 
     //para que no pise el nuevo gasto al anterior creamos un nva variable
     const gastosGuardados = JSON.parse(window.localStorage.getItem('gastosE'));
+
+
+    if(modo === 'agregarGasto'){
+
     
     //comprobamos si hay gastos guardados
     if(gastosGuardados){
@@ -3183,6 +3204,37 @@ formulario00.addEventListener('submit', (e)=>{
     window.localStorage.setItem('gastosE', JSON.stringify([{...nuevoGasto}]));
 
     }
+  }  else if (modo === 'editarGasto0'){
+
+    //obtenemos el id del gasto a editar
+    const id = document.getElementById('formulario-desc').dataset?.id;
+    
+   //hago una funcion de index donde quiero agregarle el valor despues de ejecutar un ciclo
+  //obtenemos el index del elemento a editar
+   let indexGastoAEditar;
+
+   if(id && gastosGuardados){
+    gastosGuardados.forEach((gasto, index) => {
+      if(gasto.id === id){
+        indexGastoAEditar =index;
+      }
+    });
+   }
+
+   //Hacemos una copia de los gastos guardados para poder editarla
+   //El operador spread va a tomar todos los elementos de gastosGaurdados y los guarda dentro de un nvo arreglo que van a estar en la variable nuevosGastos
+   const nuevosGastos = [...gastosGuardados];
+
+   //editamos la copia. =; Le indicamos que sobreescriba el valor que tenga 
+   nuevosGastos[indexGastoAEditar] = {
+    ...gastosGuardados[indexGastoAEditar], //accedemos a gastos guardados, accedemos al gasto
+   descripcion: descripcion00.value,
+   precio: precio00.value
+  };
+
+   //Reemplazamos el local storage con los nvos gastos
+  window.localStorage.setItem('gastosE', JSON.stringify(nuevosGastos));
+  }
         //reiniciamos los valores al final de todo el proceso condicional de descripcion y precio
     descripcion00.value='';
     precio00.value='';
@@ -3195,17 +3247,17 @@ formulario00.addEventListener('submit', (e)=>{
 
 const contenedorGastos = document.getElementById('gastosE');
 contenedorGastos.addEventListener('click', (e)=>{
- const gasto = e.target.closest('.gasto');
+ const gasto00 = e.target.closest('.gasto');
 
- if(gasto){
-    if(gasto.scrollLeft > 0){
-    gasto.querySelector('.gasto__info').scrollIntoView({
+ if(gasto00){
+    if(gasto00.scrollLeft > 0){
+    gasto00.querySelector('.gasto__info').scrollIntoView({
         behavior: 'smooth',
         inline:'start',
         block:'nearest',
     });
     }else {
-        gasto.querySelector('.gasto__acciones').scrollIntoView({
+        gasto00.querySelector('.gasto__acciones').scrollIntoView({
             behavior: 'smooth',
             inline:'start',
             block:'nearest',
@@ -3218,7 +3270,7 @@ contenedorGastos.addEventListener('click', (e)=>{
 //editar gasto
 if(e.target.closest('[data-accion="editar-gasto"]')){
     //dataset.id obtiene el id del gasto
-const id = gasto.dataset.id;
+const id = gasto00.dataset.id;
 
 //Obtenemos los gastos guardados
 //JSON.parse para que los transforme en un objeto de javascript
@@ -3248,6 +3300,26 @@ if(gastosGuardados && gastosGuardados.length > 0){
   abrirFormularioGasto('editarGasto0');
 }
 }
+
+//Borrar gasto
+if(e.target.closest('[data-accion="eliminar-gasto"]')){
+ const id = e.target.closest('.gasto').dataset.id;
+ 
+//Obtenemos los gastos guardados para luego eliminarlos
+const gastosGuardados = JSON.parse(window.localStorage.getItem('gastosE'));
+
+if(gastosGuardados){
+    const nuevosGastos =gastosGuardados.filter((gastoFilter)=>{
+        if(gastoFilter.id !== id){
+       return gastoFilter;
+        }
+    });
+    window.localStorage.setItem('gastosE', JSON.stringify(nuevosGastos));
+}
+//reinicia 
+ cargarGastos();
+}
+
 });
 
 const contenedorBoton = document.getElementById('formulario-gasto');

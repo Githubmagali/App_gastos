@@ -1,18 +1,20 @@
+import cargarGastos from "./cargarGastos";
+import cargarTotalGastado from "./cargarTotalGastado";
 import { abrirFormularioGasto } from "./eventoBtnFormularioGasto";
 
 const contenedorGastos = document.getElementById('gastosE');
 contenedorGastos.addEventListener('click', (e)=>{
- const gasto = e.target.closest('.gasto');
+ const gasto00 = e.target.closest('.gasto');
 
- if(gasto){
-    if(gasto.scrollLeft > 0){
-    gasto.querySelector('.gasto__info').scrollIntoView({
+ if(gasto00){
+    if(gasto00.scrollLeft > 0){
+    gasto00.querySelector('.gasto__info').scrollIntoView({
         behavior: 'smooth',
         inline:'start',
         block:'nearest',
     });
     }else{
-        gasto.querySelector('.gasto__acciones').scrollIntoView({
+        gasto00.querySelector('.gasto__acciones').scrollIntoView({
             behavior: 'smooth',
             inline:'start',
             block:'nearest',
@@ -25,7 +27,7 @@ contenedorGastos.addEventListener('click', (e)=>{
 //editar gasto
 if(e.target.closest('[data-accion="editar-gasto"]')){
     //dataset.id obtiene el id del gasto
-const id = gasto.dataset.id;
+const id = gasto00.dataset.id;
 
 //Obtenemos los gastos guardados
 //JSON.parse para que los transforme en un objeto de javascript
@@ -55,6 +57,27 @@ if(gastosGuardados && gastosGuardados.length > 0){
   abrirFormularioGasto('editarGasto0');
 }
 }
+
+//Borrar gasto
+if(e.target.closest('[data-accion="eliminar-gasto"]')){
+ const id = e.target.closest('.gasto').dataset.id;
+ 
+//Obtenemos los gastos guardados para luego eliminarlos
+const gastosGuardados = JSON.parse(window.localStorage.getItem('gastosE'));
+
+if(gastosGuardados){
+    const nuevosGastos =gastosGuardados.filter((gastoFilter)=>{
+        if(gastoFilter.id !== id){
+       return gastoFilter;
+        }
+    });
+    window.localStorage.setItem('gastosE', JSON.stringify(nuevosGastos));
+}
+//reinicia la funcion para que se ejecute
+ cargarGastos();
+ cargarTotalGastado();
+}
+
 });
 
 const contenedorBoton = document.getElementById('formulario-gasto');

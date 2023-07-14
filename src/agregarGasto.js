@@ -64,6 +64,13 @@ precio00.addEventListener('keyup', (e)=>{
 
 formulario00.addEventListener('submit', (e)=>{
   e.preventDefault();
+  //con closest le indicamos que busque desde el formulario hacia arriba el elemento que tenga el id formulario-gasto
+  //comprobamos que tenga un dataset con ? y encaso de que tenga; ? accedemos a .modo 
+  const modo = formulario00.closest('#formulario-gasto')?.dataset?.modo;
+  //console.log(modo);
+  //return; cortamos el codigo que esta debajo
+
+  //comprobamos que la descripcion y el precio son correctos
   if(comprobarDescripcion() && comprobarPrecio()){
     const nuevoGasto ={
       id: uuidv4(),
@@ -74,6 +81,10 @@ formulario00.addEventListener('submit', (e)=>{
 
     //para que no pise el nuevo gasto al anterior creamos un nva variable
     const gastosGuardados = JSON.parse(window.localStorage.getItem('gastosE'));
+
+
+    if(modo === 'agregarGasto'){
+
     
     //comprobamos si hay gastos guardados
     if(gastosGuardados){
@@ -88,6 +99,37 @@ formulario00.addEventListener('submit', (e)=>{
     window.localStorage.setItem('gastosE', JSON.stringify([{...nuevoGasto}]));
 
     }
+  }  else if (modo === 'editarGasto0'){
+
+    //obtenemos el id del gasto a editar
+    const id = document.getElementById('formulario-desc').dataset?.id;
+    
+   //hago una funcion de index donde quiero agregarle el valor despues de ejecutar un ciclo
+  //obtenemos el index del elemento a editar
+   let indexGastoAEditar;
+
+   if(id && gastosGuardados){
+    gastosGuardados.forEach((gasto, index) => {
+      if(gasto.id === id){
+        indexGastoAEditar =index;
+      }
+    });
+   }
+
+   //Hacemos una copia de los gastos guardados para poder editarla
+   //El operador spread va a tomar todos los elementos de gastosGaurdados y los guarda dentro de un nvo arreglo que van a estar en la variable nuevosGastos
+   const nuevosGastos = [...gastosGuardados];
+
+   //editamos la copia. =; Le indicamos que sobreescriba el valor que tenga 
+   nuevosGastos[indexGastoAEditar] = {
+    ...gastosGuardados[indexGastoAEditar], //accedemos a gastos guardados, accedemos al gasto
+   descripcion: descripcion00.value,
+   precio: precio00.value
+  }
+
+   //Reemplazamos el local storage con los nvos gastos
+  window.localStorage.setItem('gastosE', JSON.stringify(nuevosGastos));
+  }
         //reiniciamos los valores al final de todo el proceso condicional de descripcion y precio
     descripcion00.value='';
     precio00.value='';
